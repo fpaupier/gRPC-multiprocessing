@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package ocr;
+
+// A candidate image for OCR extraction.
+message OcrCandidate {
+    // binaries of the openCV image.
+    bytes image = 1;
+}
+
+// The detected text of the requested image candidate.
+message OcrResult {
+    // text detected on the image
+    string text = 1;
+}
+
+// Service to perform OCR over image.
+service OCR {
+    // Determines the text on an input image
+    rpc Detect (OcrCandidate) returns (OcrResult) {}
+}
