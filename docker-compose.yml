@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+    client:  # TODO: Add docker base image on public docker registry
+        build:
+          context: .
+          dockerfile: Dockerfile
+        container_name: client
+        working_dir: /usr/app
+        command: python3.8 /usr/app/client.py
+        env_file:
+          - .env
+        environment:
+          NUM_IMAGES: ${NUM_IMAGES}
+          NUM_WORKERS: ${NUM_WORKERS}
+        volumes:
+          - .:/usr/app/:rw
+          - ./client.py:/usr/app/client.py
+          - ./grpc_config:/usr/app/grpc_config
+        depends_on:
+          server:
+            condition: service_healthy
+    
+    server: # TODO: Add docker base image on public docker registry
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: server
+      working_dir: /usr/app
+      env_file:
+        - .env
+      environment:
+        NUM_WORKERS: ${NUM_WORKERS}
+      command: python3.8 /usr/app/server.py
+      volumes:
+        - .:/usr/app/:rw
+        - ./server.py:/usr/app/server.py
+        - ./grpc_config:/usr/app/grpc_config
+      healthcheck:  # Health checks enable you to ensure a service is healthy and condition other services start upon this service health. For more info, see see https://docs.docker.com/compose/compose-file/compose-file-v3/#healthcheck
+        test: [ "CMD-SHELL", "echo $$(grpcurl -plaintext server:13000 list 2>&1) | grep \"API\" > /dev/null" ]
+        interval: 1s
+        timeout: 5s
+        retries: 5
