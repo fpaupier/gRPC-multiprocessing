@@ -9,6 +9,7 @@ RUN apt-get install -y python-dev
 # OpenCV requirements
 RUN python3.8 -m pip install --upgrade pip
 RUN apt-get install -y libsm6 libxext6 libxrender-dev libgl1-mesa-glx
+RUN apt-get update && apt install -y libleptonica-dev tesseract-ocr libtesseract-dev --fix-missing
 
 
 # gRPC healthcheck
