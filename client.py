@@ -77,11 +77,9 @@ def _run_worker_query(img: bytes) -> str:
         detected text on the image
 
     """
-    logger.info("_run_worker_query(): Entering")
     response: image_ocr_pb2.OcrResult = _worker_stub_singleton.Detect(
         image_ocr_pb2.OcrCandidate(image=img)
     )
-    logger.info(f"_run_worker_query(): exiting: {response.text}")
     return response.text
 
 
@@ -99,12 +97,11 @@ def compute_detections(batch: tp.List[bytes]) -> tp.List[str]:
 
     """
     server_address = 'server:13000'
-    logger.info("compute_detections(): Entering")
-    with multiprocessing.Pool(processes=NUM_WORKERS,
-                              initializer=_initialize_worker,
+    multiplier: int = 2
+    with multiprocessing.Pool(processes=multiplier * NUM_WORKERS,
+                              initializer=initialize_worker,
                               initargs=(server_address,),
                               ) as worker_pool:
-        logger.info("compute_detections(): In the with context")
         ocr_results = worker_pool.map(_run_worker_query, [pickle.dumps(img) for img in batch])
         return [txt for txt in ocr_results]
 
