@@ -1,10 +1,11 @@
 version: '3'
 
 services:
-    client:  # TODO: Add docker base image on public docker registry
+    client:
         build:
           context: .
           dockerfile: Dockerfile
+        image: popszer/grpc-multiprocessing:latest
         container_name: client
         working_dir: /usr/app
         command: python3.8 /usr/app/client.py
@@ -21,10 +22,11 @@ services:
           server:
             condition: service_healthy
     
-    server: # TODO: Add docker base image on public docker registry
+    server:
       build:
         context: .
         dockerfile: Dockerfile
+      image: popszer/grpc-multiprocessing:latest
       container_name: server
       working_dir: /usr/app
       env_file:
