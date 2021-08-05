@@ -124,7 +124,7 @@ def prepare_batch() -> tp.List[bytes]:
 
 
 def run():
-    logger.info('OCR Test client started!')
+    logger.info('OCR Test client started.')
     batch = prepare_batch()
     logger.info('Batch ready, calling grpc server...')
 
@@ -132,7 +132,7 @@ def run():
     results = compute_detections(batch)
     duration = time.perf_counter() - start
 
-    logger.info(f'gRPC server answered. Processed {NUM_IMAGES} images in {duration} UA ({NUM_WORKERS} workers)')
+    logger.info(f'gRPC server answered. Processed {NUM_IMAGES} images in {round(duration,2)} UA ({NUM_WORKERS} workers)')
     logger.info(f"Text  detected on the first image: {results[0]}")
 
 
