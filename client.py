@@ -23,7 +23,7 @@ LOG_LEVEL: str = "INFO"
 logger = Logger(__name__, log_path="/tmp/logs/server.log", level=LOG_LEVEL)
 logger.update_format(LOG_FORMAT)
 
-NUM_WORKERS = int(os.environ.get("NUM_WORKERS", 2))
+NUM_CLIENTS = int(os.environ.get("NUM_CLIENTS", 1))
 NUM_IMAGES = int(os.environ.get("NUM_IMAGES", 40))
 
 _worker_channel_singleton = None
@@ -97,8 +97,7 @@ def compute_detections(batch: tp.List[bytes]) -> tp.List[str]:
 
     """
     server_address = 'server:13000'
-    multiplier: int = 2
-    with multiprocessing.Pool(processes=multiplier * NUM_WORKERS,
+    with multiprocessing.Pool(processes=NUM_CLIENTS,
                               initializer=_initialize_worker,
                               initargs=(server_address,),
                               ) as worker_pool:
@@ -132,7 +131,7 @@ def run():
     results = compute_detections(batch)
     duration = time.perf_counter() - start
 
-    logger.info(f'gRPC server answered. Processed {NUM_IMAGES} images in {round(duration,2)} UA ({NUM_WORKERS} workers)')
+    logger.info(f'gRPC server answered. Processed {NUM_IMAGES} images in {round(duration,2)} UA ({NUM_CLIENTS} clients)')
     logger.info(f"Text  detected on the first image: {results[0]}")
 
 

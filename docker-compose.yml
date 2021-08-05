@@ -32,7 +32,7 @@ services:
       env_file:
         - .env
       environment:
-        NUM_WORKERS: ${NUM_WORKERS}
+        NUM_CLIENTS: ${NUM_CLIENTS}
       command: python3.8 /usr/app/server.py
       volumes:
         - .:/usr/app/:rw
