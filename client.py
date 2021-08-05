@@ -99,7 +99,7 @@ def compute_detections(batch: tp.List[bytes]) -> tp.List[str]:
     server_address = 'server:13000'
     multiplier: int = 2
     with multiprocessing.Pool(processes=multiplier * NUM_WORKERS,
-                              initializer=initialize_worker,
+                              initializer=_initialize_worker,
                               initargs=(server_address,),
                               ) as worker_pool:
         ocr_results = worker_pool.map(_run_worker_query, [pickle.dumps(img) for img in batch])
