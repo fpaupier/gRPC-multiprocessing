@@ -31,6 +31,16 @@ NUM_WORKERS = int(os.environ.get("NUM_WORKERS", 1))
 
 
 def get_text_from_image(img: bytes) -> str:
+    """
+    Perform OCR over an image.
+
+    Args:
+        img (bytes) : a pickled image - encoded with openCV.
+
+    Returns:
+        The text found in the image by the OCR module.
+
+    """
     # By default OpenCV stores images in BGR format and since pytesseract assumes RGB format,
     # we need to convert from BGR to RGB format/mode:
     img_rgb = cv2.cvtColor(pickle.loads(img), cv2.COLOR_BGR2RGB)
