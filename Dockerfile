@@ -20,4 +20,4 @@ RUN mv grpcurl /usr/local/bin/grpcurl
 
 COPY ./requirements.txt /requirements.txt
 
-RUN --mount=type=cache,target=/root/.cache/pip python3.8 -m pip install --upgrade pip && python3.8 -m pip install -r /requirements.txt
+RUN python3.8 -m pip install --upgrade pip && python3.8 -m pip install -r /requirements.txt
