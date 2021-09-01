@@ -61,7 +61,8 @@ def _initialize_worker(server_address: str) -> None:
             ("grpc.max_receive_message_length", -1),
             ("grpc.so_reuseport", 1),
             ("grpc.use_local_subchannel_pool", 1),
-        ], )
+        ],
+    )
     _worker_stub_singleton = image_ocr_pb2_grpc.OCRStub(_worker_channel_singleton)
     atexit.register(_shutdown_worker)
 
@@ -96,12 +97,15 @@ def compute_detections(batch: tp.List[bytes]) -> tp.List[str]:
     Inspired from https://github.com/grpc/grpc/blob/master/examples/python/multiprocessing/client.py
 
     """
-    server_address = 'server:13000'
-    with multiprocessing.Pool(processes=NUM_CLIENTS,
-                              initializer=_initialize_worker,
-                              initargs=(server_address,),
-                              ) as worker_pool:
-        ocr_results = worker_pool.map(_run_worker_query, [pickle.dumps(img) for img in batch])
+    server_address = "server:13000"
+    with multiprocessing.Pool(
+        processes=NUM_CLIENTS,
+        initializer=_initialize_worker,
+        initargs=(server_address,),
+    ) as worker_pool:
+        ocr_results = worker_pool.map(
+            _run_worker_query, [pickle.dumps(img) for img in batch]
+        )
         return [txt for txt in ocr_results]
 
 
@@ -112,7 +116,7 @@ def prepare_batch() -> tp.List[bytes]:
     Returns:
         batch: (tp.List[bytes])
     """
-    logger.info('Reading src image...')
+    logger.info("Reading src image...")
     source = "/usr/app/motivational_quote.jpg"
     img = cv.imread(source)
     batch: tp.List[bytes] = []
@@ -123,15 +127,17 @@ def prepare_batch() -> tp.List[bytes]:
 
 
 def run():
-    logger.info('OCR Test client started.')
+    logger.info("OCR Test client started.")
     batch = prepare_batch()
-    logger.info('Batch ready, calling grpc server...')
+    logger.info("Batch ready, calling grpc server...")
 
     start = time.perf_counter()
     results = compute_detections(batch)
     duration = time.perf_counter() - start
 
-    logger.info(f'gRPC server answered. Processed {NUM_IMAGES} images in {round(duration,2)} UA ({NUM_CLIENTS} clients)')
+    logger.info(
+        f"gRPC server answered. Processed {NUM_IMAGES} images in {round(duration,2)} UA ({NUM_CLIENTS} clients)"
+    )
     logger.info(f"Text  detected on the first image: {results[0]}")
 
 
