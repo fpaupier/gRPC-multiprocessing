@@ -62,20 +62,12 @@ def _run_server(bind_address):
             ("grpc.max_receive_message_length", -1),
             ("grpc.so_reuseport", 1),
             ("grpc.use_local_subchannel_pool", 1),
-        ]
+        ],
     )
     image_ocr_pb2_grpc.add_OCRServicer_to_server(OCRService, server)
     server.add_insecure_port(bind_address)
     server.start()
-    _wait_forever(server)
-
-
-def _wait_forever(server):
-    try:
-        while True:
-            time.sleep(_ONE_DAY.total_seconds())
-    except KeyboardInterrupt:
-        server.stop(None)
+    server.wait_for_termination()
 
 
 @contextlib.contextmanager
@@ -85,7 +77,7 @@ def _reserve_port():
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
     if sock.getsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT) == 0:
         raise RuntimeError("Failed to set SO_REUSEPORT.")
-    sock.bind(('', 13000))
+    sock.bind(("", 13000))
     try:
         yield sock.getsockname()[1]
     finally:
@@ -96,15 +88,14 @@ def main():
     """
     Inspired from https://github.com/grpc/grpc/blob/master/examples/python/multiprocessing/server.py
     """
-    logger.info(f'Initializing server with {NUM_WORKERS} workers')
+    logger.info(f"Initializing server with {NUM_WORKERS} workers")
     with _reserve_port() as port:
         bind_address = f"[::]:{port}"
         logger.info(f"Binding to {bind_address}")
         sys.stdout.flush()
         workers = []
         for _ in range(NUM_WORKERS):
-            worker = multiprocessing.Process(target=_run_server,
-                                             args=(bind_address,))
+            worker = multiprocessing.Process(target=_run_server, args=(bind_address,))
             worker.start()
             workers.append(worker)
         for worker in workers:
