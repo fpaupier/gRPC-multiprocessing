@@ -2,21 +2,19 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update && apt install && apt install software-properties-common -y
-RUN apt-get install python3.8 python3-pip -y
-RUN apt-get install -y python-dev
+RUN apt update && apt install -y wget python3.8 python3-pip python3-dev
 
 # OpenCV requirements
 RUN python3.8 -m pip install --upgrade pip
-RUN apt-get install -y libsm6 libxext6 libxrender-dev libgl1-mesa-glx
-RUN apt-get update && apt install -y libleptonica-dev tesseract-ocr libtesseract-dev --fix-missing
+RUN apt update && apt install -y libsm6 libxext6 libxrender-dev libgl1-mesa-glx
 
+# Tesseract requirements
+RUN apt update && apt install -y libleptonica-dev tesseract-ocr libtesseract-dev
 
 # gRPC healthcheck
-COPY ./resources/grpcurl_1.8.0_linux_x86_64.tar.gz /grpcurl_1.8.0_linux_x86_64.tar.gz
-RUN tar -xvzf /grpcurl_1.8.0_linux_x86_64.tar.gz
-RUN chmod +x grpcurl
-RUN mv grpcurl /usr/local/bin/grpcurl
+RUN wget https://github.com/fullstorydev/grpcurl/releases/download/v1.8.2/grpcurl_1.8.2_linux_x86_64.tar.gz -O /grpcurl.tar.gz
+RUN tar -xvzf /grpcurl.tar.gz
+RUN chmod +x grpcurl && mv grpcurl /usr/local/bin/grpcurl && rm /grpcurl.tar.gz
 
 COPY ./requirements.txt /requirements.txt
 
