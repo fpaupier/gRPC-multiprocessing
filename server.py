@@ -67,15 +67,7 @@ def _run_server(bind_address):
     image_ocr_pb2_grpc.add_OCRServicer_to_server(OCRService, server)
     server.add_insecure_port(bind_address)
     server.start()
-    _wait_forever(server)
-
-
-def _wait_forever(server):
-    try:
-        while True:
-            time.sleep(_ONE_DAY.total_seconds())
-    except KeyboardInterrupt:
-        server.stop(None)
+    server.wait_for_termination()
 
 
 @contextlib.contextmanager
