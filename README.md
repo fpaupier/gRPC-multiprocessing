@@ -4,7 +4,7 @@ _A boilerplate to use multiprocessing for your gRPC server in your Python projec
 
 This repo is a boilerplate showing how you can use **multiprocessing** with gRPC in python.
 
-## Getting started 
+## Getting started
 
 This project offers a minimum reproducible example of clients sending batches of images to gRPC servers.
 
